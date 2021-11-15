@@ -51,14 +51,7 @@ df_bus['도로구간번호'] = df_bus['도로구간번호'].astype(str)
 df_bus.dtypes
 
 
-# In[8]:
-
-
-# 불필요한 인덱스 제거
-df_bus.reset_index(drop=True)
-
-
-# In[9]:
+# In[12]:
 
 
 # folium을 이용한 지도 시각화
