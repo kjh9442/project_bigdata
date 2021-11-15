@@ -28,78 +28,69 @@ bus.head()
 # In[4]:
 
 
-# 중복된 버스정류장 확인
-bus.duplicated(['도로구간번호'])
+df_bus = bus[['도로구간번호', '법정구역', '정류장명', '정류장종류', '위도', '경도', '비고']]
+df_bus
 
 
 # In[5]:
 
 
-# 중복된 버스정류장 개수 확인
-bus.duplicated(['도로구간번호']).sum()
-
-
-# In[6]:
-
-
-# 중복으로 들어가있는 버스정류장 제거
-bus = bus.drop_duplicates('도로구간번호')
-
-
-# In[7]:
-
-
-# 필요한 column만 사용하기
-bus_columns = ['도로구간번호','정류장명', '정류장종류','위도', '경도']
-df_bus =  bus[bus_columns]
-df_bus
-
-
-# In[8]:
-
-
 df_bus.dtypes
 
 
-# In[9]:
+# In[6]:
 
 
 # 연산에 사용할 데이터가 아니기 때문에 object(문자열)형태로 변경한다.
 df_bus['도로구간번호'] = df_bus['도로구간번호'].astype(str)
 
 
-# In[10]:
+# In[7]:
 
 
 df_bus.dtypes
 
 
-# In[11]:
+# In[8]:
 
 
 # 불필요한 인덱스 제거
 df_bus.reset_index(drop=True)
 
 
-# In[12]:
+# In[9]:
 
 
 # folium을 이용한 지도 시각화
 map_bus = folium.Map(location=[df_bus['위도'].mean(), df_bus['경도'].mean()], zoom_start=12)
 for i in df_bus.index:
-    bus_name = df_bus.loc[i, '정류장명']
-    popup = folium.Popup(bus_name, max_width=200)
-    folium.Marker(location=[df_bus.loc[i, '위도'], df_bus.loc[i, '경도']], popup=popup).add_to(map_bus)
+    # 택시 정류장인 경우 아이콘의 색상을 'red'로 한다.
+    if df_bus['정류장명'][i] == 'TAXI정류장':
+        bus_name = df_bus.loc[i, '정류장명']
+        popup = folium.Popup(bus_name, max_width=200)
+        folium.Marker(location=[df_bus.loc[i, '위도'], df_bus.loc[i, '경도']], popup=popup, icon=folium.Icon(color='red')).add_to(map_bus)
+    # 현장에는 정류장이 없으나 BIS시스템 상에 존재하는 정류장은 아이콘의 색상을 'green'으로 한다.
+    elif df_bus['비고'][i] == '현장에는 정류장이 없으나 BIS시스템 상에 존재하는 정류장':
+        bus_name = df_bus.loc[i, '정류장명']
+        popup = folium.Popup(bus_name, max_width=200)
+        folium.Marker(location=[df_bus.loc[i, '위도'], df_bus.loc[i, '경도']], popup=popup, icon=folium.Icon(color='green')).add_to(map_bus)
+    else:
+        bus_name = df_bus.loc[i, '정류장명']
+        popup = folium.Popup(bus_name, max_width=200)
+        folium.Marker(location=[df_bus.loc[i, '위도'], df_bus.loc[i, '경도']], popup=popup).add_to(map_bus)
+
 map_bus.save('./output/bus_map.html')
 map_bus
 
 
-# In[13]:
+# In[10]:
 
 
 # seaborn을 이용한 시각화
+# 법정구역별로 정류장색을 나눴다
 plt.figure(figsize=[16, 12])
-sns.scatterplot(data=df_bus, x='경도', y='위도', hue='정류장종류', s=30)
+sns.scatterplot(data=df_bus, x='경도', y='위도', hue='법정구역', s=50)
+plt.savefig('./output/project.png')
 
 
 # In[ ]:
