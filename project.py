@@ -10,6 +10,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import folium
+plt.rcParams['font.family'] = 'NanumGothicCoding'
+plt.rcParams['font.size'] = 12
 
 
 # In[2]:
@@ -28,30 +30,36 @@ bus.head()
 # In[4]:
 
 
-df_bus = bus[['도로구간번호', '법정구역', '정류장명', '정류장종류', '위도', '경도', '비고']]
-df_bus
+bus.columns
 
 
 # In[5]:
 
 
-df_bus.dtypes
+df_bus = bus[['도로구간번호', '법정구역', '정류장명', '정류장종류', '위도', '경도', '비고']]
+df_bus
 
 
 # In[6]:
+
+
+df_bus.dtypes
+
+
+# In[7]:
 
 
 # 연산에 사용할 데이터가 아니기 때문에 object(문자열)형태로 변경한다.
 df_bus['도로구간번호'] = df_bus['도로구간번호'].astype(str)
 
 
-# In[7]:
+# In[8]:
 
 
 df_bus.dtypes
 
 
-# In[12]:
+# In[9]:
 
 
 # folium을 이용한 지도 시각화
@@ -84,6 +92,18 @@ map_bus
 plt.figure(figsize=[16, 12])
 sns.scatterplot(data=df_bus, x='경도', y='위도', hue='법정구역', s=50)
 plt.savefig('./output/project.png')
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
 
 
 # In[ ]:
